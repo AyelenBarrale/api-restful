@@ -8,10 +8,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 const routerProductos = new Router();
-const routerProducto = new Router();
 
 app.use("/api/productos", routerProductos);
-app.use("/api/productos/:id", routerProducto);
 
 app.get("/", (req, res) => {
   // eslint-disable-next-line no-undef
@@ -21,22 +19,16 @@ app.get("/", (req, res) => {
 const Contenedor = require("./src/contenedor");
 let listaProductos = new Contenedor("./src/productos.json");
 
-/* let productos = [];
-let id = 0; */
-
 routerProductos.get("/", async (req, res) => {
   const lista = await listaProductos.getAll();
   try {
-    /* res.status(200).json({
-      productos: productos,
-    }); */
     res.status(200).send(lista);
   } catch (error) {
     res.status(400).send(error);
   }
 });
 
-routerProducto.get("/", async (req, res) => {
+routerProductos.get("/:id", async (req, res) => {
   const { id } = req.params;
   const producto = await listaProductos.getById(id);
   try {
@@ -48,44 +40,19 @@ routerProducto.get("/", async (req, res) => {
   } catch (error) {
     res.status(400).send(error);
   }
-  /* const { id } = req.params;
-  const producto = productos.find((el) => el.id === id);
-  try {
-    if (producto) {
-      res.status(200).json({
-        producto: producto,
-      });
-    } else {
-      res.status(404).json({ error: "Producto no encontrado" });
-    }
-  } catch (error) {
-    res.status(400).json({ error: "Mensaje" });
-  } */
 });
 
 routerProductos.post("/", async (req, res) => {
   const { body } = req;
   await listaProductos.saveNuevoProd(body);
-
   try {
     res.status(200).send(body);
   } catch (error) {
     res.status(400).send(error);
   }
-  /* const data = req.body;
-  id++;
-  const producto = { id, ...data };
-  productos.push(producto);
-  try {
-    res.status(200).json({
-      agregado: producto,
-    });
-  } catch (error) {
-    res.status(400).json({ error: "Mensaje" });
-  } */
 });
 
-routerProducto.put("/", async (req, res) => {
+routerProductos.put("/:id", async (req, res) => {
   const {
     body,
     params: { id },
@@ -105,7 +72,7 @@ routerProducto.put("/", async (req, res) => {
   }
 });
 
-routerProducto.delete("/", async (req, res) => {
+routerProductos.delete("/:id", async (req, res) => {
   const {
     params: { id },
   } = req;
@@ -116,22 +83,6 @@ routerProducto.delete("/", async (req, res) => {
   } catch (error) {
     res.status(400).send(error);
   }
-  /* const {
-    params: { id },
-  } = req;
-
-  const prodEliminado = productos.find((el) => el.id === id);
-  const indice = productos.indexOf(prodEliminado);
-
-  productos.splice(indice, 1);
-
-  try {
-    res.status(200).json({
-      borrado: prodEliminado,
-    });
-  } catch (error) {
-    res.status(400).json({ error: "Mensaje" });
-  } */
 });
 
 const PORT = 8080;

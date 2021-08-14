@@ -1,26 +1,19 @@
 const fs = require("fs");
-
 class Contenedor {
   constructor(archivo) {
     this.archivo = archivo;
   }
 
-  async getAll() {
-    try {
+  getAll() {
+    const productos = fs.readFileSync(
+      this.archivo,
+      "utf-8",
       // eslint-disable-next-line no-unused-vars
-      const data = await fs.readFile(
-        this.archivo,
-        "utf-8",
-        // eslint-disable-next-line no-unused-vars
-        function (err, data) {
-          if (err) console.log("error", err);
-        }
-      );
-      const lista = JSON.parse(data);
-      return lista;
-    } catch (error) {
-      console.log(error);
-    }
+      function (err, data) {
+        if (err) console.log("error", err);
+      }
+    );
+    return JSON.parse(productos);
   }
 
   async save(nuevaLista) {
@@ -76,7 +69,7 @@ class Contenedor {
 
       lista[index] = producto;
 
-      const nuevaListaJson = this.stringify(lista);
+      const nuevaListaJson = JSON.stringify(lista);
 
       await this.save(nuevaListaJson);
       return producto;
@@ -90,7 +83,6 @@ class Contenedor {
     const producto = await this.getById(id);
 
     if (producto) {
-      //devuelve array con todos los productos menos el que coincide con el id.
       const nuevaLista = lista.filter((product) => product.id != id);
       const nuevaListaJson = JSON.stringify(nuevaLista);
 
@@ -103,21 +95,3 @@ class Contenedor {
 }
 
 module.exports = Contenedor;
-
-/* const products = require("./productos");
-let instancia = new Contenedor("./src/productos.json");
-
-const saveAll = async (products) => {
-  for (product of products) {
-    try {
-      await instancia.saveNuevoProd(product);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-};
-
-saveAll(products)  
-    .then( () => instancia.getAll())
-    .then( data => console.log(data))
-    .then(error => console.log(error)) */
